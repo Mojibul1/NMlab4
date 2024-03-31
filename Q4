@@ -1,0 +1,67 @@
+//linear algebraic equations using Gauss  Seidel Method. 
+
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Function to perform Gauss-Seidel method
+vector<double> gaussSeidel(const vector<vector<double>>& A, const vector<double>& b, int maxIterations, double tolerance) {
+    int n = A.size();
+    vector<double> x(n, 0); // Initial guess for solution
+    vector<double> xPrev(n);
+
+    int iter = 0;
+    double error = tolerance + 1;
+
+    while (iter < maxIterations && error > tolerance) {
+        xPrev = x;
+        error = 0;
+
+        for (int i = 0; i < n; ++i) {
+            double sum = 0;
+            for (int j = 0; j < n; ++j) {
+                if (j != i) {
+                    sum += A[i][j] * x[j];
+                }
+            }
+            x[i] = (b[i] - sum) / A[i][i];
+            error += abs(x[i] - xPrev[i]);
+        }
+
+        ++iter;
+    }
+
+    if (iter >= maxIterations) {
+        cout << "Warning: Maximum iterations reached before convergence.\n";
+    }
+
+    return x;
+}
+
+int main() {
+    // Example system of equations:
+    // 2x + y - z = 4
+    // -x + 2y + z = 1
+    // x + y + 3z = 9
+    vector<vector<double>> A = {{2, 1, -1}, {-1, 2, 1}, {1, 1, 3}};
+    vector<double> b = {4, 1, 9};
+
+    int maxIterations;
+    double tolerance;
+    cout << "Enter the maximum number of iterations: ";
+    cin >> maxIterations;
+    cout << "Enter the tolerance for convergence: ";
+    cin >> tolerance;
+
+    vector<double> solution = gaussSeidel(A, b, maxIterations, tolerance);
+
+    cout << "Solution of the system of equations:\n";
+    for (int i = 0; i < solution.size(); ++i) {
+        cout << "x" << i + 1 << " = " << fixed << setprecision(6) << solution[i] << endl;
+    }
+
+    return 0;
+}
