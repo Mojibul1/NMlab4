@@ -1,0 +1,55 @@
+//linear algebraic equations using Gauss elimination method. 
+
+#include<iostream>
+using namespace std;
+
+int main() {
+   int i,j,k,n,rank;
+   float a[10][10],b,x[10];
+   cout << "\nEnter the size of matrix: ";
+   cin >> n;
+   cout << "\nEnter the elements of augmented matrix (rowwise):\n";
+   for(i=0; i<n; i++) {
+      for(j=0; j<n; j++) {
+         cin >> a[i][j];
+      }
+      cin >> a[i][n];
+   }
+   //to find the elements of diagonal matrix
+   for (i=0; i<n; i++) {
+      for(j=i+1; j<n; j++) {
+         if(a[i][i] != 0) {
+            b = a[j][i]/a[i][i];
+            for(k=0; k<n; k++) {
+               a[j][k] = a[j][k] - a[i][k]*b;
+            }
+            a[j][n] = a[j][n] - a[i][n]*b;
+         }
+      }
+   }
+   //to find the rank of the matrix
+   rank = 0;
+   for (i=0; i<n; i++) {
+      if(a[i][i] != 0) {
+         rank++;
+      }
+   }
+   cout << "\nRank of the matrix is: " << rank << endl;
+   if (rank < n) {
+      cout << "Matrix is singular and can't be inverted" << endl;
+      return 0;
+   }
+   //to find the solution of the system
+   for (i=n-1; i>=0; i--) {
+      x[i] = a[i][n];
+      for(j=i+1; j<n; j++) {
+         x[i] = x[i] - a[i][j]*x[j];
+      }
+      x[i] = x[i]/a[i][i];
+   }
+   cout << "The solution is:\n";
+   for (i=0; i<n; i++) {
+      cout << "x" << i+1 << " = " << x[i] << endl;
+   }
+   return 0;
+}
