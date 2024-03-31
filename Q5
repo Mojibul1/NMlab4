@@ -1,0 +1,84 @@
+// Eigen values using Power method. 
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+// Function to perform Power Method to find the dominant eigenvalue and eigenvector
+pair<double, vector<double>> powerMethod(const vector<vector<double>>& A, int maxIterations, double tolerance) {
+    int n = A.size();
+    vector<double> x(n, 1.0); // Initial guess for eigenvector
+    vector<double> xPrev(n);
+
+    double lambda = 0;
+    int iter = 0;
+    double error = tolerance + 1;
+
+    while (iter < maxIterations && error > tolerance) {
+        xPrev = x;
+        double norm = 0;
+
+        // Perform matrix-vector multiplication A*x
+        for (int i = 0; i < n; ++i) {
+            x[i] = 0;
+            for (int j = 0; j < n; ++j) {
+                x[i] += A[i][j] * xPrev[j];
+            }
+            norm += x[i] * x[i];
+        }
+
+        // Normalize the eigenvector
+        norm = sqrt(norm);
+        for (int i = 0; i < n; ++i) {
+            x[i] /= norm;
+        }
+
+        // Calculate the eigenvalue
+        double lambdaPrev = lambda;
+        lambda = 0;
+        for (int i = 0; i < n; ++i) {
+            lambda += A[i][0] * x[i];
+        }
+
+        // Calculate error
+        error = abs(lambda - lambdaPrev);
+
+        ++iter;
+    }
+
+    if (iter >= maxIterations) {
+        cout << "Warning: Maximum iterations reached before convergence.\n";
+    }
+
+    return {lambda, x};
+}
+
+int main() {
+    // Example matrix
+    vector<vector<double>> A = {{4, -1, 2},
+                                {2, 3, -1},
+                                {1, 1, 3}};
+
+    int maxIterations;
+    double tolerance;
+    cout << "Enter the maximum number of iterations: ";
+    cin >> maxIterations;
+    cout << "Enter the tolerance for convergence: ";
+    cin >> tolerance;
+
+    // Perform Power Method
+    pair<double, vector<double>> result = powerMethod(A, maxIterations, tolerance);
+    double eigenvalue = result.first;
+    vector<double> eigenvector = result.second;
+
+    cout << "Dominant eigenvalue: " << eigenvalue << endl;
+    cout << "Corresponding eigenvector: ";
+    for (int i = 0; i < eigenvector.size(); ++i) {
+        cout << fixed << setprecision(6) << eigenvector[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
